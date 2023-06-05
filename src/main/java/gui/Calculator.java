@@ -148,7 +148,6 @@ public class Calculator extends VBox implements EventHandler<ActionEvent>{
 		Integer[] numeros= {0,1,2,3,4,5,6,7,8,9};
 		String[] display_values=displayText.getText().split("");
 		String display=displayText.getText();
-		System.out.println(display.length());
 
 		if(displayText.getText().contains("No")){
 			displayText.setText("No se puede dividir entre 0");
