@@ -27,7 +27,7 @@ public class Calculator extends VBox implements EventHandler<ActionEvent>{
 	
 	public Calculator(){
 		super(10);
-		this.displayText = new Text();
+		this.displayText = new Text("0");
 		
 		Rectangle rt = new Rectangle(250, 50, Color.TRANSPARENT);
 		
@@ -123,7 +123,7 @@ public class Calculator extends VBox implements EventHandler<ActionEvent>{
 		Button reset = new Button("C");
 		gd.add(reset, 0, 4, 3, 1);
 		reset.setPrefWidth(215);
-		reset.setOnAction(event -> displayText.setText(""));
+		reset.setOnAction(event -> displayText.setText("0"));
 		
 		this.getChildren().addAll(sp, gd);
 	}
@@ -145,21 +145,38 @@ public class Calculator extends VBox implements EventHandler<ActionEvent>{
 		Button bu= (Button) e.getSource();
 		String value= bu.getText();
 		String[] operadores= {"+", "-", "*", "/"};
+		Integer[] numeros= {0,1,2,3,4,5,6,7,8,9};
 		String[] display_values=displayText.getText().split("");
 		String display=displayText.getText();
+		System.out.println(display.length());
 
-		if (isNumeric(value)){
-			// if(Integer.parseInt(value)==0 && isNumeric(displayText.getText()) && Integer.parseInt(displayText.getText())!=0){
-			// 	displayText.setText(displayText.getText() + value);
-			// }
+		if(displayText.getText().contains("No")){
+			displayText.setText("No se puede dividir entre 0");
+		}else if (isNumeric(value)){
+			if(Integer.parseInt(value)==0 && displayText.getText().equals("0")){
+				displayText.setText("0");
+			}else if(Integer.parseInt(value)!=0 && displayText.getText().equals("0")){
+				
+				displayText.setText(value);
+
+			}else{
+				displayText.setText(displayText.getText() + value);
+			}
+		}else if(Arrays.asList(operadores).contains(value) && Arrays.stream(numeros).anyMatch(num -> Arrays.asList(display_values).contains(num.toString())) && !Arrays.stream(operadores).anyMatch(Arrays.asList(display_values)::contains)){
+
 			displayText.setText(displayText.getText() + value);
-		}else if(Arrays.asList(operadores).contains(value) && !Arrays.stream(operadores).anyMatch(Arrays.asList(display_values)::contains)){
+
+		}else if(Arrays.asList(operadores).contains(value) && Arrays.stream(operadores).anyMatch(Arrays.asList(display_values)::contains) && !Arrays.asList(operadores).contains(display_values[0]) && !isNumeric(display_values[display.indexOf(Arrays.stream(operadores).filter(display::contains).findFirst().orElse(null))+1])){
+			
+			displayText.setText(display.substring(0,display.length()-1) + value);
+
+		}else if(Arrays.asList(operadores).contains(value) && isNumeric(display_values[display.indexOf(Arrays.stream(operadores).filter(display::contains).findFirst().orElse(null))+1]) && !Arrays.asList(operadores).contains(display_values[0])){
+			
+			displayText.setText(displayText.getText());
+		
+		}else if(Arrays.asList(operadores).contains(value) && Arrays.asList(operadores).contains(display_values[0])){
 
 			displayText.setText(displayText.getText() + value);
-		}else if(Arrays.asList(operadores).contains(value) && Arrays.stream(operadores).anyMatch(Arrays.asList(display_values)::contains)){
-
-			displayText.setText(displayText.getText() + value);
-
 		}else if(value=="="){
 			Map<String, BiFunction<Double,Double,Double>> operaciones = new HashMap<String, BiFunction<Double,Double,Double>>();
 			operaciones.put("+", (a,b)->a+b);
@@ -183,7 +200,7 @@ public class Calculator extends VBox implements EventHandler<ActionEvent>{
 				}
 			
 			}
-				displayText.setText(resultado!=null ? String.valueOf(resultado) : "Error: División por cero");
+				displayText.setText(resultado!=null ? String.valueOf(resultado) : "No se puede dividir entre 0");
 				
 
 		}
